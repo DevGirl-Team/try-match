@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int               @id @default(autoincrement())
+  email           String            @unique
+  name            String            @unique
+  passwordSalt    String?
+  passwordHash    String
+  sessionToken    String?
+  bio             String?
+  UsersRelation   UserRelation[]
+  UsersDiscussion UserDiscussion[]
+  Messages        Message[]
+  UserGameLevel   UserGameLevel[]
+  UserPaidFeature UserPaidFeature[]
+}
+
+model Relation {
+  id            Int            @id @default(autoincrement())
+  isMatch       Boolean
+  UsersRelation UserRelation[]
+}
+
+model UserRelation {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  relation   Relation @relation(fields: [relationId], references: [id])
+  relationId Int
+}
+
+model Discussion {
+  id              Int              @id @default(autoincrement())
+  name            String
+  UsersDiscussion UserDiscussion[]
+  Messages        Message[]
+}
+
+model UserDiscussion {
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  discussion   Discussion @relation(fields: [discussionId], references: [id])
+  discussionId Int
+}
+
+model Message {
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  discussion   Discussion @relation(fields: [discussionId], references: [id])
+  discussionId Int
+}
+
+model Game {
+  id       Int    @id @default(autoincrement())
+  property String
+  value    String
+}
+
+model GameLevel {
+  id            Int             @id @default(autoincrement())
+  name          String
+  UserGameLevel UserGameLevel[]
+  PaidFeature   PaidFeature[]
+}
+
+model UserGameLevel {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  gameLevel   GameLevel @relation(fields: [gameLevelId], references: [id])
+  gameLevelId Int
+}
+
+model PaidFeature {
+  id                  Int               @id @default(autoincrement())
+  name                String
+  requiredGameLevel   GameLevel         @relation(fields: [requiredGameLevelId], references: [id])
+  requiredGameLevelId Int
+  UserPaidFeature     UserPaidFeature[]
+}
+
+model UserPaidFeature {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  paidFeature   PaidFeature @relation(fields: [paidFeatureId], references: [id])
+  paidFeatureId Int
+}
