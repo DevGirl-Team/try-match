@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link href="./styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <h2>Se connecter</h2>
+
+    <form method="POST" id="login">
+      <label for="email">Email</label>
+      <input type="email" id="email" />
+
+      <label for="password">Mot de passe</label>
+      <input type="password" id="password" />
+
+      <button>Se connecter</button>
+    </form>
+
+    <a href="/">S'inscrire</a>
+
+    <script>
+      fetch("http://localhost:8000/api/users")
+        .then((res) => res.json())
+        .then((data) => console.log(data));
+
+      const loginForm = document.querySelector("#login");
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const body = {
+          email: document.querySelector("#email").value,
+          password: document.querySelector("#password").value,
+        };
+
+        fetch("http://localhost:8000/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        })
+          .then((res) => res.json())
+          .then((data) => console.log(data));
+      });
+    </script>
+  </body>
+</html>
