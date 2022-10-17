@@ -9,7 +9,7 @@ module.exports = {
     "profile.html",
     "discussions.html",
     "discussion/index.html",
-    "game/index.html",
+    "./game/index.html",
   ],
   theme: {
     extend: {},

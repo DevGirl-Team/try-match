@@ -20,6 +20,11 @@ var config = {
   parent: document.querySelector("#game"),
 };
 
+let currentUser;
+let currentLevel;
+let gameLevels;
+let userGamesLevels;
+
 var game = new Phaser.Game(config);
 
 var map;
@@ -28,7 +33,44 @@ var cursors;
 var groundLayer, coinLayer, flowerLayer;
 var score = 0;
 var text;
-let lifeCount = 3;
+const deadModal = document.querySelector('#dead-modal');
+
+(async () => {
+  // Get user
+  const userLocalData = window.localStorage.getItem("trymatchdevgirl");
+  if (userLocalData) {
+    currentUser = JSON.parse(userLocalData);
+
+    // Get game levels
+    const getGameLevelsRes = await fetch(
+      `http://localhost:8000/api/gameLevels`
+    );
+    const getGameLevelsData = await getGameLevelsRes.json();
+    gameLevels = getGameLevelsData.data;
+    console.log(getGameLevelsData);
+
+    // Get user game level
+    const getUserGameLevelsRes = await fetch(
+      `http://localhost:8000/api/userGameLevels/user/${currentUser.id}`
+    );
+    const getUserGameLevelsData = await getUserGameLevelsRes.json();
+    userGamesLevels = getUserGameLevelsData.data;
+
+    // If level 1
+    if (getUserGameLevelsData.data.lenght === 0) {
+      currentLevel = gameLevels[0]
+    }
+    else {}
+  }
+  else {
+    window.location.replace("/");
+  }
+})();
+
+function hideDeadModal() {
+  deadModal.classList.remove('hidden');
+  deadModal.classList.add('flex')
+}
 
 function collectCoin(sprite, tile) {
   coinLayer.removeTileAt(tile.x, tile.y); // remove the tile/coin
@@ -96,6 +138,13 @@ function create() {
     repeat: -1,
   });
 
+  // idle with only one frame, so repeat is not neaded
+  this.anims.create({
+    key: 'idle',
+    frames: [{ key: 'player', frame: 'p1_stand' }],
+    frameRate: 10,
+  });
+
   // coin image used as tileset
   var coinTiles = map.addTilesetImage("coin");
   // add coins as tiles
@@ -105,15 +154,6 @@ function create() {
   // when the player overlaps with a tile with index 17, collectCoin will be called
   this.physics.add.overlap(player, coinLayer);
 
-  // flower image used as tileset
-  var flowerTiles = map.addTilesetImage("flower");
-  // add flowers as tiles
-  flowerLayer = map.createDynamicLayer("Flowers", flowerTiles, 0, 0);
-
-  flowerLayer.setTileIndexCallback(18, () => console.log("flower"), this); // the flower id is 18
-  // when the player overlaps with a tile with index 18, collectCoin will be called
-  this.physics.add.overlap(player, flowerLayer);
-
   text = this.add.text(20, 570, "0", {
     fontSize: "20px",
     fill: "#ffffff",
@@ -121,21 +161,22 @@ function create() {
   text.setScrollFactor(0);
 }
 
-function update() {
+function update(time, delta) {
   if (cursors.left.isDown) {
-    player.body.setVelocityX(-200); // move left
-    player.anims.play("walk", true); // play walk animation
+    player.body.setVelocityX(-200);
+    player.anims.play('walk', true); // walk left
     player.flipX = true; // flip the sprite to the left
-  } else if (cursors.right.isDown) {
-    player.body.setVelocityX(200); // move right
-    player.anims.play("walk", true); // play walk animatio
+  }
+  else if (cursors.right.isDown) {
+    player.body.setVelocityX(200);
+    player.anims.play('walk', true);
     player.flipX = false; // use the original sprite looking to the right
   } else {
     player.body.setVelocityX(0);
-    player.anims.play("idle", true);
+    player.anims.play('idle', true);
   }
-
-  if ((cursors.space.isDown || cursors.up.isDown) && player.body.onFloor()) {
-    player.body.setVelocityY(-500); // jump up
+  // jump 
+  if (cursors.up.isDown && player.body.onFloor()) {
+    player.body.setVelocityY(-500);
   }
 }

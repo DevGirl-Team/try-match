@@ -1,162 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Try...Match - Dashboard</title>
-    <link href="./dist/styles.css" rel="stylesheet" />
-    <!-- <script src="./libs/hammer.min.js"></script> -->
-  </head>
-  <body>
-    <header class="bg-slate-200">
-      <div class="flex items-center px-6 py-2">
-        <img
-          class="rounded-full overflow-hidden w-6 h-6 object-cover"
-          src=""
-          alt=""
-          id="picture"
-        />
-        <p id="name" class="uppercase text-xs m-0 ml-2 text-slate-700"></p>
-      </div>
 
-      <hr class="w-full h-0.5 bg-slate-300" />
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Try...Match - Dashboard</title>
+  <link href="./dist/styles.css" rel="stylesheet" />
+  <!-- <script src="./libs/hammer.min.js"></script> -->
+</head>
 
-      <nav class="px-6 py-2">
-        <ul class="flex justify-around items-center">
-          <li>
-            <a href="/dashboard.html" class="p-1 rounded-sm">Accueil</a>
-          </li>
-          <li>
-            <a href="/profile.html" class="p-1 rounded-sm bg-slate-300"
-              >Profil</a
-            >
-          </li>
-          <li>
-            <a href="/discussions.html" class="p-1 rounded-sm">Discussions</a>
-          </li>
-          <li>
-            <button
-              class="bg-blue-500 px-2 py-1 rounded-sm text-white"
-              id="logout"
-            >
-              Déconnexion
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </header>
-    <main class="p-6">
-      <h1 class="text-3xl font-bold underline">Profil</h1>
+<body>
+  <header class="bg-slate-200">
+    <div class="flex items-center px-6 py-2">
+      <img class="rounded-full overflow-hidden w-6 h-6 object-cover" src="" alt="" id="picture" />
+      <p id="name" class="uppercase text-xs m-0 ml-2 text-slate-700"></p>
+    </div>
 
-      <section>
-        <h2 class="text-lg underline">Informations de base</h2>
-        <form action="" class="my-5" id="form">
-          <div class="mb-2 flex flex-col items-center">
-            <img
-              class="rounded-full overflow-hidden w-24 h-24 mb-2 object-cover"
-              src=""
-              alt=""
-              id="form-img"
-            />
-            <label
-              for="form-picture"
-              type="button"
-              class="inline-block cursor-pointer rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >Changer la Photo de profil</label
-            >
-            <input class="sr-only" type="file" id="form-picture" />
-          </div>
+    <hr class="w-full h-0.5 bg-slate-300" />
 
-          <div class="mb-2">
-            <label for="form-email">Email</label>
-            <input type="email" id="form-email" class="block border" required />
-          </div>
-
-          <div class="mb-2">
-            <label for="form-name">Nom</label>
-            <input type="text" id="form-name" class="block border" required />
-          </div>
-
-          <div class="mb-3">
-            <label for="form-bio">Bio</label>
-            <textarea
-              name=""
-              id="form-bio"
-              class="block border"
-              rows="5"
-            ></textarea>
-          </div>
-
-          <button
-            type="submit"
-            class="bg-blue-500 px-2 py-1 rounded-sm text-white"
-          >
-            Enregistrer
+    <nav class="px-6 py-2">
+      <ul class="flex justify-around items-center">
+        <li>
+          <a href="/dashboard.html" class="p-1 rounded-sm">Accueil</a>
+        </li>
+        <li>
+          <a href="/profile.html" class="p-1 rounded-sm bg-slate-300">Profil</a>
+        </li>
+        <li>
+          <a href="/discussions.html" class="p-1 rounded-sm">Discussions</a>
+        </li>
+        <li>
+          <button class="bg-blue-500 px-2 py-1 rounded-sm text-white" id="logout">
+            Déconnexion
           </button>
-        </form>
-      </section>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <main class="p-6">
+    <h1 class="text-3xl font-bold underline">Profil</h1>
 
-      <section class="mb-24">
-        <h2 class="text-lg underline">Gallerie photos</h2>
-        <ul id="gallery" class="flex space-x-5 mb-10">
-          <li
-            id="gallery-1"
-            class="w-24 h-36 border-2 border-blue-500 border-dashed bg-slate-200"
-          ></li>
-          <li
-            id="gallery-2"
-            class="w-24 h-36 border-2 border-blue-500 border-dashed bg-slate-200"
-          ></li>
-          <li
-            id="gallery-3"
-            class="w-24 h-36 border-2 border-blue-500 border-dashed bg-slate-200"
-          ></li>
-        </ul>
+    <a href="/game/index.html"
+      class="my-5 inline-block cursor-pointer rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Accéder
+      au jeu</a>
 
-        <div id="gallery-add">
-          <label
-            for="gallery-input"
-            type="button"
-            class="inline-block cursor-pointer rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >Ajouter une photo à la gallerie</label
-          >
-          <input class="sr-only" type="file" id="gallery-input" />
+    <section>
+      <h2 class="text-lg underline">Informations de base</h2>
+      <form action="" class="my-5" id="form">
+        <div class="mb-2 flex flex-col items-center">
+          <img class="rounded-full overflow-hidden w-24 h-24 mb-2 object-cover" src="" alt="" id="form-img" />
+          <label for="form-picture" type="button"
+            class="inline-block cursor-pointer rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Changer
+            la Photo de profil</label>
+          <input class="sr-only" type="file" id="form-picture" />
         </div>
-      </section>
 
-      <section class="mb-24">
-        <h2 class="text-lg underline">
-          Photo de ton animal de compagnie félin
-        </h2>
-        <p class="p-2 bg-red-200 rounded-md">
-          ALERTE : Si tu mens et que tu mets une photo qui ne représente pas un
-          animal de type félin <span class="text-[7px]">(Wesh, sorry shidozz)</span>,
-          <span class="font-bold text-red-900"
-            >TU SERAS HANTÉ PAR LE FANTÔME DE DEVGIRL LA BAGARRE PENDANT 1000
-            ANS</span
-          >.
-        </p>
-
-        <ul class="flex space-x-5 my-10">
-          <li
-            id="cat-picture"
-            class="w-24 h-36 border-2 border-blue-500 border-dashed bg-slate-200"
-          ></li>
-        </ul>
-
-        <div id="cat-add">
-          <label
-            for="cat-input"
-            type="button"
-            class="inline-block cursor-pointer rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >Ajouter une photo de mon animal de compagnie félin</label
-          >
-          <input class="sr-only" type="file" id="cat-input" />
+        <div class="mb-2">
+          <label for="form-email">Email</label>
+          <input type="email" id="form-email" class="block border" required />
         </div>
-      </section>
-    </main>
 
-    <script type="module" src="profile.js"></script>
-  </body>
+        <div class="mb-2">
+          <label for="form-name">Nom</label>
+          <input type="text" id="form-name" class="block border" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="form-bio">Bio</label>
+          <textarea name="" id="form-bio" class="block border" rows="5"></textarea>
+        </div>
+
+        <button type="submit" class="bg-blue-500 px-2 py-1 rounded-sm text-white">
+          Enregistrer
+        </button>
+      </form>
+    </section>
+
+    <section class="mb-24">
+      <h2 class="text-lg underline">Gallerie photos</h2>
+      <ul id="gallery" class="flex space-x-5 mb-10">
+        <li id="gallery-1" class="w-24 h-36 border-2 border-blue-500 border-dashed bg-slate-200"></li>
+        <li id="gallery-2" class="w-24 h-36 border-2 border-blue-500 border-dashed bg-slate-200"></li>
+        <li id="gallery-3" class="w-24 h-36 border-2 border-blue-500 border-dashed bg-slate-200"></li>
+      </ul>
+
+      <div id="gallery-add">
+        <label for="gallery-input" type="button"
+          class="inline-block cursor-pointer rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Ajouter
+          une photo à la gallerie</label>
+        <input class="sr-only" type="file" id="gallery-input" />
+      </div>
+    </section>
+
+    <section class="mb-24">
+      <h2 class="text-lg underline">
+        Photo de ton animal de compagnie félin
+      </h2>
+      <p class="p-2 bg-red-200 rounded-md">
+        ALERTE : Si tu mens et que tu mets une photo qui ne représente pas un
+        animal de type félin <span class="text-[7px]">(Wesh, sorry shidozz)</span>,
+        <span class="font-bold text-red-900">TU SERAS HANTÉ PAR LE FANTÔME DE DEVGIRL LA BAGARRE PENDANT 1000
+          ANS</span>.
+      </p>
+
+      <ul class="flex space-x-5 my-10">
+        <li id="cat-picture" class="w-24 h-36 border-2 border-blue-500 border-dashed bg-slate-200"></li>
+      </ul>
+
+      <div id="cat-add">
+        <label for="cat-input" type="button"
+          class="inline-block cursor-pointer rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Ajouter
+          une photo de mon animal de compagnie félin</label>
+        <input class="sr-only" type="file" id="cat-input" />
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="profile.js"></script>
+</body>
+
 </html>

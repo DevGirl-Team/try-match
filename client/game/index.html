@@ -7,49 +7,34 @@
     <link href="../dist/styles.css" rel="stylesheet" />
     <title>Document</title>
   </head>
-  <body>
+  <body class="h-full">
     <div id="game" class="relative">
-      <ul id="hearts" class="flex absolute top-5 left-5 space-x-5">
-        <li class="heart">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="50"
-            height="50"
-            class="fill-red-500"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M12 4.435c-1.989-5.399-12-4.597-12 3.568 0 4.068 3.06 9.481 12 14.997 8.94-5.516 12-10.929 12-14.997 0-8.118-10-8.999-12-3.568z"
-            />
-          </svg>
-        </li>
-        <li class="heart">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="50"
-            height="50"
-            class="fill-red-500"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M12 4.435c-1.989-5.399-12-4.597-12 3.568 0 4.068 3.06 9.481 12 14.997 8.94-5.516 12-10.929 12-14.997 0-8.118-10-8.999-12-3.568z"
-            />
-          </svg>
-        </li>
-        <li class="heart">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="50"
-            height="50"
-            class="fill-red-500"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M12 4.435c-1.989-5.399-12-4.597-12 3.568 0 4.068 3.06 9.481 12 14.997 8.94-5.516 12-10.929 12-14.997 0-8.118-10-8.999-12-3.568z"
-            />
-          </svg>
-        </li>
-      </ul>
+    </div>
+
+    <!-- It's a match modal -->
+    <div
+      id="dead-modal"
+      class="hidden z-50 fixed bg-slate-900/50 w-full h-full left-0 top-0 justify-center items-center"
+    >
+      <div class="modal-content bg-slate-100 p-10 rounded-lg w-1/2">
+        <h2 class="text-center font-bold mb-5">
+          T'es mort charo, que veux-tu faire ?
+        </h2>
+
+        <a
+          id="modal-discussion-link"
+          href="/profile.html"
+          class="text-center block w-full rounded-lg mb-3 text-white bg-blue-500 py-1 px-2"
+        >
+          Revenir sur mon profil
+        </a>
+        <button
+          id="modal-close-button"
+          class="block w-full rounded-lg text-white bg-blue-500 py-1 px-2"
+        >
+          Recommencer
+        </button>
+      </div>
     </div>
     <script type="module" src="script.js"></script>
   </body>

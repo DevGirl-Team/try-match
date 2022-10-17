@@ -318,6 +318,41 @@ app.put("/api/users/:userId", (req, res) => __awaiter(void 0, void 0, void 0, fu
         res.status(500).json({ message: e, success: false });
     }
 }));
+// GET game levels
+app.get("/api/gameLevels", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Check if user exists
+        let gameLevels = yield prisma.gameLevel.findMany();
+        if (gameLevels) {
+            res.status(200).json({ success: true, data: gameLevels });
+        }
+        else
+            res
+                .status(404)
+                .json({ success: false, message: "L'utilisateur n'existe po" });
+    }
+    catch (e) {
+        res.status(500).json({ message: e, success: false });
+    }
+}));
+// GET user game level by user id
+app.get("/api/userGameLevels/user/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.userId;
+        // Check if user exists
+        let userGameLevels = yield prisma.userGameLevel.findMany({ where: { userId: parseInt(id) } });
+        if (userGameLevels) {
+            res.status(200).json({ success: true, data: userGameLevels });
+        }
+        else
+            res
+                .status(404)
+                .json({ success: false, message: "L'utilisateur n'existe po" });
+    }
+    catch (e) {
+        res.status(500).json({ message: e, success: false });
+    }
+}));
 http.listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });

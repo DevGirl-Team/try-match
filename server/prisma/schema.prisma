@@ -78,6 +78,8 @@ model Game {
 model GameLevel {
   id            Int             @id @default(autoincrement())
   name          String
+  TimerSeconds  Int
+  TargetScore   Int
   UserGameLevel UserGameLevel[]
   PaidFeature   PaidFeature[]
 }
