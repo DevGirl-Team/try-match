@@ -18,6 +18,11 @@ model User {
   passwordHash    String
   sessionToken    String?
   bio             String?
+  picture         String?
+  galleryPicture1 String?
+  galleryPicture3 String?
+  galleryPicture2 String?
+  catPicture      String?
   UsersRelation   UserRelation[]
   UsersDiscussion UserDiscussion[]
   Messages        Message[]
@@ -33,6 +38,7 @@ model Relation {
 
 model UserRelation {
   id         Int      @id @default(autoincrement())
+  hadLiked   Boolean
   user       User     @relation(fields: [userId], references: [id])
   userId     Int
   relation   Relation @relation(fields: [relationId], references: [id])
@@ -41,7 +47,7 @@ model UserRelation {
 
 model Discussion {
   id              Int              @id @default(autoincrement())
-  name            String
+  name            String?
   UsersDiscussion UserDiscussion[]
   Messages        Message[]
 }
@@ -56,6 +62,7 @@ model UserDiscussion {
 
 model Message {
   id           Int        @id @default(autoincrement())
+  content      String
   user         User       @relation(fields: [userId], references: [id])
   userId       Int
   discussion   Discussion @relation(fields: [discussionId], references: [id])

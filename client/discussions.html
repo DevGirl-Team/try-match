@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Try...Match - Dashboard</title>
+    <link href="./dist/styles.css" rel="stylesheet" />
+    <!-- <script src="./libs/hammer.min.js"></script> -->
+  </head>
+  <body>
+    <header class="bg-slate-200">
+      <div class="flex items-center px-6 py-2">
+        <img
+          class="rounded-full overflow-hidden w-6 h-6 object-cover"
+          src=""
+          alt=""
+          id="picture"
+        />
+        <p id="name" class="uppercase text-xs m-0 ml-2 text-slate-700"></p>
+      </div>
+
+      <hr class="w-full h-0.5 bg-slate-300" />
+
+      <nav class="px-6 py-2">
+        <ul class="flex justify-around items-center">
+          <li>
+            <a href="/dashboard.html" class="p-1 rounded-sm">Accueil</a>
+          </li>
+          <li>
+            <a href="/profile.html" class="p-1 rounded-sm">Profil</a>
+          </li>
+          <li>
+            <a href="/discussions.html" class="p-1 rounded-sm bg-slate-300"
+              >Discussions</a
+            >
+          </li>
+          <li>
+            <button
+              class="bg-blue-500 px-2 py-1 rounded-sm text-white"
+              id="logout"
+            >
+              Déconnexion
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main class="p-6">
+      <h1 class="text-3xl font-bold underline mb-5">Discussions</h1>
+
+      <ul id="discussions"></ul>
+    </main>
+
+    <script>
+      let currentUser;
+      const discussionsList = document.querySelector("#discussions");
+
+      const defaultPicture =
+        "https://images.unsplash.com/photo-1664638687239-2e6bfc32917f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80";
+
+      (async () => {
+        // Get user
+        const userLocalData = window.localStorage.getItem("trymatchdevgirl");
+        if (
+          userLocalData &&
+          typeof userLocalData !== "undefined" &&
+          userLocalData !== "undefined"
+        ) {
+          currentUser = JSON.parse(userLocalData);
+          // Display user data
+          displayUserData(currentUser);
+
+          // Get user discussions
+          const discussionsRes = await fetch(
+            `http://localhost:8000/api/discussions/user/${currentUser.id}`
+          );
+          const discussionsData = await discussionsRes.json();
+          displayDiscussionsList(discussionsData.data);
+
+          // Log out button
+          const logoutButton = document.querySelector("#logout");
+          logoutButton.addEventListener("click", () => {
+            window.localStorage.removeItem("trymatchdevgirl");
+            window.location.replace("/");
+          });
+        } else {
+          window.location.replace("/");
+        }
+      })();
+
+      function displayUserData(user) {
+        const name = document.querySelector("#name");
+        if (name) {
+          name.innerHTML = user.name;
+        }
+
+        const picture = document.querySelector("#picture");
+        if (picture) {
+          picture.src = user.picture ?? defaultPicture;
+        }
+      }
+
+      function displayDiscussionsList(discussions) {
+        discussions.forEach((discussion) => displayDiscussionItem(discussion));
+      }
+
+      function displayDiscussionItem(discussion) {
+        const contacts = discussion.UsersDiscussion.filter(
+          ({ userId }) => userId !== currentUser.id
+        );
+        discussionsList.innerHTML += `
+          <li class="flex items-center space-x-2 p-2 border transition hover:bg-slate-200 cursor-pointer relative">
+            <img class="w-12 h-12 rounded-full object-cover" alt="Photo de profil de ${
+              contacts[0].user.name
+            }" src="${contacts[0].user.picture ?? defaultPicture}" />
+            <p class="m-0">${contacts.map(({ user }) => user.name)}</p>
+            <a href="/discussion/index.html?discussionId=${
+              discussion.id
+            }" class="absolute w-full h-full left-0 top-0"><span class="sr-only">Aller sur la discussion</span></a>
+          </li>
+        `;
+      }
+    </script>
+  </body>
+</html>

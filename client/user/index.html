@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Try...Match - Dashboard</title>
+    <link href="../dist/styles.css" rel="stylesheet" />
+    <!-- <script src="./libs/hammer.min.js"></script> -->
+  </head>
+  <body>
+    <header class="bg-slate-200">
+      <div class="flex items-center px-6 py-2">
+        <img
+          class="rounded-full overflow-hidden w-6 h-6 object-cover"
+          src=""
+          alt=""
+          id="picture"
+        />
+        <p id="name" class="uppercase text-xs m-0 ml-2 text-slate-700"></p>
+      </div>
+
+      <hr class="w-full h-0.5 bg-slate-300" />
+
+      <nav class="px-6 py-2">
+        <ul class="flex justify-around items-center">
+          <li>
+            <a href="/dashboard.html" class="p-1 rounded-sm">Accueil</a>
+          </li>
+          <li>
+            <a href="/profile.html" class="p-1 rounded-sm">Profil</a>
+          </li>
+          <li>
+            <a href="/discussions.html" class="p-1 rounded-sm">Discussions</a>
+          </li>
+          <li>
+            <button
+              class="bg-blue-500 px-2 py-1 rounded-sm text-white"
+              id="logout"
+            >
+              Déconnexion
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main class="p-6">
+      <div class="flex justify-center items-center space-x-5 mb-5">
+        <img id="user-picture" class="w-24 h-24 rounded-full object-cover" />
+        <div>
+          <h1 class="text-3xl font-bold" id="user-name"></h1>
+          <p id="user-bio" class="m-0">Bio</p>
+        </div>
+      </div>
+
+      <section>
+        <h2 class="text-xl font-bold">Gallerie</h2>
+
+        <ul id="user-gallery" class="flex space-x-5">
+          <li id="gallery-1" class="w-full"></li>
+          <li id="gallery-2" class="w-full"></li>
+          <li id="gallery-3" class="w-full"></li>
+        </ul>
+
+        <div id="cat-picture"></div>
+      </section>
+    </main>
+
+    <script>
+      let currentUser;
+      let user;
+
+      const defaultPicture =
+        "https://images.unsplash.com/photo-1664638687239-2e6bfc32917f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80";
+
+      (async () => {
+        // Get user
+        const userLocalData = window.localStorage.getItem("trymatchdevgirl");
+        if (
+          userLocalData &&
+          typeof userLocalData !== "undefined" &&
+          userLocalData !== "undefined"
+        ) {
+          currentUser = JSON.parse(userLocalData);
+          // Display user data
+          displayUserData(currentUser);
+
+          // Get discussion id
+          const queryString = window.location.search;
+          const urlParams = new URLSearchParams(queryString);
+
+          // Get discussion
+          const userRes = await fetch(
+            `http://localhost:8000/api/users/${urlParams.get("userId")}`
+          );
+          const userData = await userRes.json();
+          user = userData.data;
+
+          displayUser();
+
+          // Log out button
+          const logoutButton = document.querySelector("#logout");
+          logoutButton.addEventListener("click", () => {
+            window.localStorage.removeItem("trymatchdevgirl");
+            window.location.replace("/");
+          });
+        } else {
+          window.location.replace("/");
+        }
+      })();
+
+      function displayUser() {
+        const userPicture = document.querySelector("#user-picture");
+        if (userPicture) userPicture.src = user.picture ?? defaultPicture;
+
+        const userName = document.querySelector("#user-name");
+        if (userName) userName.innerHTML = user.name;
+
+        const userBio = document.querySelector("#user-bio");
+        if (userBio)
+          userBio.innerHTML = user.bio ?? "Pas très bavard le coco...";
+
+        // Gallery
+        const galleryPicture1 = document.querySelector("#gallery-1");
+        const galleryPicture2 = document.querySelector("#gallery-2");
+        const galleryPicture3 = document.querySelector("#gallery-3");
+        galleryPicture1.innerHTML = user.galleryPicture1
+          ? `<img src="${user.galleryPicture1}" class="w-full h-full object-cover" />`
+          : "";
+        galleryPicture2.innerHTML = user.galleryPicture2
+          ? `<img src="${user.galleryPicture2}" class="w-full h-full object-cover" />`
+          : "";
+        galleryPicture3.innerHTML = user.galleryPicture3
+          ? `<img src="${user.galleryPicture3}" class="w-full h-full object-cover" />`
+          : "";
+
+        const catPicture = document.querySelector("#cat-picture");
+        catPicture.innerHTML = user.catPicture
+          ? `<img src="${user.catPicture}" class="w-full h-full object-cover mt-5" />`
+          : `<p class="p-2 bg-red-200 rounded-md">
+              ALERTE : Cet utilisateur n'a pas mis de photo de chat.
+              <span class="font-bold text-red-900">
+                  Cet énergumène est À FUIR DE TOUTE URGENCE.
+                </span
+              >.
+            </p>`;
+      }
+
+      function displayUserData(user) {
+        const name = document.querySelector("#name");
+        if (name) {
+          name.innerHTML = user.name;
+        }
+
+        const picture = document.querySelector("#picture");
+        if (picture) {
+          picture.src = user.picture ?? defaultPicture;
+        }
+      }
+    </script>
+  </body>
+</html>

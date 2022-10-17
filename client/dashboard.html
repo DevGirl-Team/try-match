@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Try...Match - Dashboard</title>
+    <link href="./dist/styles.css" rel="stylesheet" />
+    <!-- <script src="./libs/hammer.min.js"></script> -->
+  </head>
+  <body>
+    <header class="bg-slate-200">
+      <div class="flex items-center px-6 py-2">
+        <img
+          class="rounded-full overflow-hidden w-6 h-6 object-cover"
+          src=""
+          alt=""
+          id="picture"
+        />
+        <p id="name" class="uppercase text-xs m-0 ml-2 text-slate-700"></p>
+      </div>
+
+      <hr class="w-full h-0.5 bg-slate-300" />
+
+      <nav class="px-6 py-2">
+        <ul class="flex justify-around items-center">
+          <li>
+            <a href="/dashboard.html" class="p-1 rounded-sm bg-slate-300"
+              >Accueil</a
+            >
+          </li>
+          <li>
+            <a href="/profile.html" class="p-1 rounded-sm">Profil</a>
+          </li>
+          <li>
+            <a href="/discussions.html" class="p-1 rounded-sm">Discussions</a>
+          </li>
+          <li>
+            <button
+              class="bg-blue-500 px-2 py-1 rounded-sm text-white"
+              id="logout"
+            >
+              Déconnexion
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main class="p-6">
+      <h1 class="text-3xl font-bold underline">Dashboard</h1>
+
+      <h2>Swipe et Match</h2>
+      <div class="h-96 flex justify-center items-center" id="cards-container">
+        <ul id="cards" class="relative w-full h-full"></ul>
+      </div>
+    </main>
+
+    <!-- It's a match modal -->
+    <div
+      id="modal"
+      class="hidden z-50 fixed bg-slate-900/50 w-full h-full left-0 top-0 justify-center items-center"
+    >
+      <div class="modal-content bg-slate-100 p-10 rounded-lg">
+        <h2 class="text-center font-bold mb-5">
+          It's a match, espèce de charo
+        </h2>
+        <div class="flex justify-around mb-5">
+          <div class="relative w-24 h-24">
+            <img
+              class="rounded-full overflow-hidden w-full h-full object-cover"
+              src=""
+              alt=""
+              id="modal-user-picture-1"
+            />
+            <h3
+              class="absolute bottom-0 left-1/2 translate-x-[-50%] inline-block bg-white shadow-sm p-1 rounded-lg"
+              id="modal-user-1"
+            ></h3>
+          </div>
+          <div class="relative w-24 h-24">
+            <img
+              class="rounded-full overflow-hidden w-full h-full object-cover"
+              src=""
+              alt=""
+              id="modal-user-picture-2"
+            />
+            <h3
+              class="absolute bottom-0 left-1/2 translate-x-[-50%] inline-block bg-white shadow-sm p-1 rounded-lg"
+              id="modal-user-2"
+            ></h3>
+          </div>
+        </div>
+
+        <a
+          id="modal-discussion-link"
+          href=""
+          class="text-center block w-full rounded-lg mb-3 text-white bg-blue-500 py-1 px-2"
+        >
+          Va lui parler
+        </a>
+        <button
+          id="modal-close-button"
+          class="block w-full rounded-lg text-white bg-blue-500 py-1 px-2"
+        >
+          Continue à swipe
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let currentUser;
+      let filteredUsers;
+      let relations;
+
+      const defaultPicture =
+        "https://images.unsplash.com/photo-1664638687239-2e6bfc32917f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80";
+
+      (async () => {
+        // Get user
+        const userLocalData = window.localStorage.getItem("trymatchdevgirl");
+        if (userLocalData) {
+          currentUser = JSON.parse(userLocalData);
+
+          // Display user data
+          displayUserData(currentUser);
+
+          // Log out button
+          const logoutButton = document.querySelector("#logout");
+          logoutButton.addEventListener("click", () => {
+            window.localStorage.removeItem("trymatchdevgirl");
+            window.location.replace("/");
+          });
+
+          // Modal
+          const modal = document.querySelector("#modal");
+          const modalCloseBtn = document.querySelector("#modal-close-button");
+          // Modal close button
+          modalCloseBtn.addEventListener("click", () => {
+            modal.classList.remove("flex");
+            modal.classList.add("hidden");
+          });
+
+          // Get users list
+          const usersRes = await fetch("http://localhost:8000/api/users");
+          const usersData = await usersRes.json();
+          const users = usersData.data;
+
+          // Remove user form the deck
+          filteredUsers = users.filter(({ id }) => id !== currentUser.id);
+
+          // Get relations of the user
+          const relationsRes = await fetch(
+            `http://localhost:8000/api/relations/${currentUser.id}`
+          );
+          const relationsData = await relationsRes.json();
+          relations = relationsData.data;
+          usersLiked = [];
+
+          relations.forEach((rel) => {
+            // If current user liked it
+            if (
+              rel.UsersRelation.some(
+                (userRel) =>
+                  userRel.userId === currentUser.id && userRel.hadLiked
+              )
+            ) {
+              rel.UsersRelation.forEach((userRel) => {
+                if (userRel.userId !== currentUser.id)
+                  usersLiked.push(userRel.userId);
+              });
+            }
+          });
+          // Remove liked persons from deck
+          filteredUsers = filteredUsers.filter(
+            ({ id }) => !usersLiked.includes(id)
+          );
+
+          // Filter users refused
+          if (currentUser.refusedIds)
+            filteredUsers = filteredUsers.filter(
+              ({ id }) =>
+                !currentUser.refusedIds.some((refusedId) => refusedId === id)
+            );
+
+          // Display
+          displayCards(currentUser, filteredUsers);
+        } else {
+          window.location.replace("/");
+        }
+      })();
+
+      function displayUserData(user) {
+        const name = document.querySelector("#name");
+        if (name) {
+          name.innerHTML = user.name;
+        }
+
+        const picture = document.querySelector("#picture");
+        if (picture) {
+          picture.src = user.picture ?? defaultPicture;
+        }
+      }
+
+      function displayCards(currentUser, users) {
+        if (users.length > 0) {
+          const cards = document.querySelector("#cards");
+          users.forEach((user) => {
+            displayCard(currentUser, user, cards);
+          });
+        } else displayEmpty();
+      }
+
+      function displayEmpty() {
+        const cardsContainer = document.querySelector("#cards-container");
+        cardsContainer.innerHTML = `<p class="text-slate-400">Ya personne à matcher, charo va...</p>`;
+      }
+
+      function displayCard(currentUser, user, cards) {
+        const { name, bio, picture, id } = user;
+
+        const card = document.createElement("li");
+        card.className =
+          "card max-w-sm block overflow-hidden rounded-lg shadow-lg absolute top-1/2 left-1/2 bg-slate-50";
+
+        const img = document.createElement("img");
+        img.src = picture ?? defaultPicture;
+        img.className = "h-60 object-cover w-full";
+        img.alt = `Photo de profile de ${name}`;
+        card.appendChild(img);
+
+        const infos = document.createElement("div");
+        infos.className = "px-3 pt-3 pb-5";
+
+        infos.innerHTML = `
+            <h3 class="font-bold">${name}</h3>
+            <p class="text-sm">${
+              bio ?? "La personne n'est pas très bavarde..."
+            }</p>`;
+
+        const buttonsContainer = document.createElement("div");
+        buttonsContainer.className = "flex justify-center mt-5 space-x-5";
+
+        const refusedButton = document.createElement("button");
+        refusedButton.innerHTML = `
+              <svg
+                  class="fill-red-500 mr-1"
+                  width="18"
+                  height="18"
+                  clip-rule="evenodd"
+                  fill-rule="evenodd"
+                  stroke-linejoin="round"
+                  stroke-miterlimit="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                <path
+                  d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 1.5c-4.69 0-8.497 3.807-8.497 8.497s3.807 8.498 8.497 8.498 8.498-3.808 8.498-8.498-3.808-8.497-8.498-8.497zm0 7.425 2.717-2.718c.146-.146.339-.219.531-.219.404 0 .75.325.75.75 0 .193-.073.384-.219.531l-2.717 2.717 2.727 2.728c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.384-.073-.53-.219l-2.729-2.728-2.728 2.728c-.146.146-.338.219-.53.219-.401 0-.751-.323-.751-.75 0-.192.073-.384.22-.531l2.728-2.728-2.722-2.722c-.146-.147-.219-.338-.219-.531 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"
+                  fill-rule="nonzero"
+                />
+              </svg>
+              Nope
+            `;
+        refusedButton.className =
+          "py-1 px-5 text-red-500 rounded-full shadow-lg flex items-center";
+        refusedButton.addEventListener("click", () => {
+          addUserToRefusedArray(currentUser, id);
+          removeUser(id, card);
+        });
+        buttonsContainer.appendChild(refusedButton);
+
+        const approvedButton = document.createElement("button");
+        approvedButton.innerHTML = `
+              <svg
+                  class="fill-green-500 mr-1"
+                  width="18"
+                  height="18"
+                  clip-rule="evenodd"
+                  fill-rule="evenodd"
+                  stroke-linejoin="round"
+                  stroke-miterlimit="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m11.998 2.005c5.517 0 9.997 4.48 9.997 9.997 0 5.518-4.48 9.998-9.997 9.998-5.518 0-9.998-4.48-9.998-9.998 0-5.517 4.48-9.997 9.998-9.997zm0 1.5c-4.69 0-8.498 3.807-8.498 8.497s3.808 8.498 8.498 8.498 8.497-3.808 8.497-8.498-3.807-8.497-8.497-8.497zm-5.049 8.886 3.851 3.43c.142.128.321.19.499.19.202 0 .405-.081.552-.242l5.953-6.509c.131-.143.196-.323.196-.502 0-.41-.331-.747-.748-.747-.204 0-.405.082-.554.243l-5.453 5.962-3.298-2.938c-.144-.127-.321-.19-.499-.19-.415 0-.748.335-.748.746 0 .205.084.409.249.557z"
+                    fill-rule="nonzero"
+                  />
+              </svg>
+              Liker
+              `;
+        approvedButton.className =
+          "py-1 px-5 text-green-500 rounded-full shadow-lg flex items-center";
+        approvedButton.addEventListener("click", async () => {
+          let relation = relations.find((rel) =>
+            rel.UsersRelation.some((userRel) => userRel.userId === id)
+          );
+
+          // If relation exists
+          if (relation) {
+            // edit the userraletion
+            const currentUserRelation = relation.UsersRelation.find(
+              (userRel) => userRel.userId === currentUser.id
+            );
+            const editUserRelationRes = await fetch(
+              `http://localhost:8000/api/usersrelation/${currentUserRelation.id}`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  ...currentUserRelation,
+                  hadLiked: true,
+                }),
+              }
+            );
+
+            // Relation is a match
+            const editRelationRes = await fetch(
+              `http://localhost:8000/api/relations/${relation.id}`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  isMatch: true,
+                }),
+              }
+            );
+            const editRelationData = await editRelationRes.json();
+
+            if (editRelationData.success) {
+              // Create a discussion
+              const createDiscussionRes = await fetch(
+                `http://localhost:8000/api/discussions`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    usersId: [id, currentUser.id],
+                  }),
+                }
+              );
+              const createDiscussionData = await createDiscussionRes.json();
+
+              if (createDiscussionData.success) {
+                // Remove from list
+                removeUser(id, card);
+
+                // Visual it's a match
+                showModal(
+                  modal,
+                  [currentUser, { id, name, picture }],
+                  createDiscussionData.data.id
+                );
+              } else {
+                console.error(createDiscussionData);
+              }
+            } else {
+              console.error(editRelationData);
+            }
+          }
+          // Relation doesn't exists
+          else {
+            // Create relation
+            const createRelationRes = await fetch(
+              `http://localhost:8000/api/relations`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  isMatch: false,
+                  userWhoHasBeenLiked: id,
+                  userWhoLiked: currentUser.id,
+                }),
+              }
+            );
+
+            // Remove from list
+            removeUser(id, card);
+          }
+        });
+        buttonsContainer.appendChild(approvedButton);
+
+        infos.appendChild(buttonsContainer);
+
+        card.appendChild(infos);
+
+        cards.appendChild(card);
+      }
+
+      function updateUser(user) {
+        window.localStorage.setItem("trymatchdevgirl", JSON.stringify(user));
+      }
+
+      function addUserToRefusedArray(currentUser, id) {
+        if (currentUser.refusedIds) currentUser.refusedIds.push(id);
+        else currentUser.refusedIds = [id];
+
+        updateUser(currentUser);
+      }
+
+      function removeUser(id, card) {
+        card.remove();
+        // Remove user from array
+        filteredUsers = filteredUsers.filter(
+          (filterUser) => filterUser.id !== id
+        );
+
+        if (filteredUsers.length <= 0) displayEmpty();
+      }
+
+      function showModal(modal, users, discussionId) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+
+        // Write names
+        modal.querySelector("#modal-user-1").innerHTML = users[0].name;
+        modal.querySelector("#modal-user-2").innerHTML = users[1].name;
+
+        // Pictures
+        modal.querySelector("#modal-user-picture-1").src =
+          users[0].picture ?? defaultPicture;
+        modal.querySelector("#modal-user-picture-2").src =
+          users[1].picture ?? defaultPicture;
+
+        // Discuss link
+        modal.querySelector(
+          "#modal-discussion-link"
+        ).href = `/discussion/index.html?id=${discussionId}`;
+      }
+    </script>
+  </body>
+</html>

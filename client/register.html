@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Try...Match - Inscription</title>
+    <link href="./dist/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <h1 class="text-3xl font-bold underline">Inscription</h1>
+
+    <form method="POST" id="signup" class="mb-5">
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" class="block border" required />
+      </div>
+
+      <div>
+        <label for="name">Nom</label>
+        <input type="text" id="name" class="block border" required />
+      </div>
+
+      <div class="mb-5">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" class="block border" />
+      </div>
+
+      <button class="bg-blue-500 px-2 py-1 rounded-sm text-white">
+        S'inscrire
+      </button>
+    </form>
+
+    <a href="/" class="underline">Se connecter</a>
+
+    <script>
+      const signUpForm = document.querySelector("#signup");
+      signUpForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const body = {
+          email: document.querySelector("#email").value,
+          name: document.querySelector("#name").value,
+          password: document.querySelector("#password").value,
+        };
+
+        fetch("http://localhost:8000/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            window.location.replace('/')
+          });
+      });
+    </script>
+  </body>
+</html>
